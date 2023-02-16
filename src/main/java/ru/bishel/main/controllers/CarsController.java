@@ -44,8 +44,8 @@ public class CarsController {
         return "cars/edit";
     }
     @PatchMapping("/{id}")
-    public String confirmChanges(@ModelAttribute("car") Car car) {
-        carsDAO.editCar(car);
+    public String confirmChanges(@ModelAttribute("car") Car car, @PathVariable("id") int id) {
+        carsDAO.editCar(car, id);
         return "redirect:/cars";
     }
     @DeleteMapping("/{id}")

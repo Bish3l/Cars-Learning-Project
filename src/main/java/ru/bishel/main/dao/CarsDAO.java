@@ -26,11 +26,12 @@ public class CarsDAO {
         car.setId(ID++);
         cars.add(car);
     }
-    public void editCar(Car car) {
-        Car existingCar = cars.get(car.getId());
+    public void editCar(Car car, int id) {
+        Car existingCar = getCar(id);
 
         existingCar.setCost(car.getCost());
         existingCar.setName(car.getName());
+        existingCar.setAmountOfDoors(car.getAmountOfDoors());
         existingCar.setMaxSpeed(car.getMaxSpeed());
         existingCar.setManufacturingYear(car.getManufacturingYear());
     }
