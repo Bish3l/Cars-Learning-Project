@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Editing</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/cars/{id}(id=${car.getId()})}" th:object="${car}">
+    <label for="name">Name: </label>
+    <input type="text" id="name" th:field="*{name}" th:value="${car.getName()}"/>
+    <br>
+    <label for="cost">Cost: </label>
+    <input type="text" id="cost" th:field="*{cost}" th:value="${car.getCost()}"/>
+    <br>
+    <label for="amountOfDoors">Amount of Doors: </label>
+    <input type="text" id="amountOfDoors" th:field="*{amountOfDoors}" th:value="${car.getAmountOfDoors()}"/>
+    <br>
+    <label for="maxSpeed">Max speed: </label>
+    <input type="text" id="maxSpeed" th:field="*{maxSpeed}" th:value="${car.getMaxSpeed()}"/>
+    <br>
+    <label for="manufacturingYear">Manufacturing Year: </label>
+    <input type="text" id="manufacturingYear" th:field="*{manufacturingYear}" th:value="${car.getManufacturingYear()}"/>
+    <br>
+    <input type="submit" value="Edit car!"/>
+
+</form>
+</body>
+</html>
