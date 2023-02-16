@@ -8,18 +8,23 @@
 <form th:method="PATCH" th:action="@{/cars/{id}(id=${car.getId()})}" th:object="${car}">
     <label for="name">Name: </label>
     <input type="text" id="name" th:field="*{name}" th:value="${car.getName()}"/>
+    <div style="color: red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">NAME_ERROR</div>
     <br>
     <label for="cost">Cost: </label>
     <input type="text" id="cost" th:field="*{cost}" th:value="${car.getCost()}"/>
+    <div style="color: red" th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}">COST_ERROR</div>
     <br>
     <label for="amountOfDoors">Amount of Doors: </label>
     <input type="text" id="amountOfDoors" th:field="*{amountOfDoors}" th:value="${car.getAmountOfDoors()}"/>
+    <div style="color: red" th:if="${#fields.hasErrors('amountOfDoors')}" th:errors="*{amountOfDoors}">AMOUNT_OF_DOORS_ERROR</div>
     <br>
     <label for="maxSpeed">Max speed: </label>
     <input type="text" id="maxSpeed" th:field="*{maxSpeed}" th:value="${car.getMaxSpeed()}"/>
+    <div style="color: red" th:if="${#fields.hasErrors('maxSpeed')}" th:errors="*{maxSpeed}">MAX_SPEED_ERROR</div>
     <br>
     <label for="manufacturingYear">Manufacturing Year: </label>
     <input type="text" id="manufacturingYear" th:field="*{manufacturingYear}" th:value="${car.getManufacturingYear()}"/>
+    <div style="color: red" th:if="${#fields.hasErrors('manufacturingYear')}" th:errors="*{manufacturingYear}">MANUFACTURING_YEAR_ERROR</div>
     <br>
     <input type="submit" value="Edit car!"/>
 

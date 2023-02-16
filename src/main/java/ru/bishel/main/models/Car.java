@@ -1,15 +1,32 @@
 package ru.bishel.main.models;
 
+
 import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Component
 public class Car {
     private int id;
-    private String name;
-    private int maxSpeed;
-    private int amountOfDoors;
-    private int cost;
 
+    @NotEmpty(message = "This field cannot be empty")
+    @Size(min = 2, max = 40, message = "Name must be more than 1 and less than 41 characters")
+    private String name;
+
+    @Min(value = 10, message = "Maximum speed cannot be less than 10 km/h")
+    @Max(value = 10000, message = "Maximum speed cannot be greater than 10 000 km/h")
+    private int maxSpeed;
+
+    @Min(value = 2, message = "You cannot have less than 2 doors")
+    @Max(value = 14, message = "You cannot have more than 14 doors")
+    private int amountOfDoors;
+
+    @Min(value = 0, message = "Cost can't be negative")
+    private int cost;
+    @Min(value = 0, message = "Year of manufacturing can't be negative")
     private int manufacturingYear;
 
     public String getName() {

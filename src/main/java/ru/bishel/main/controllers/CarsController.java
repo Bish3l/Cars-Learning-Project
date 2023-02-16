@@ -3,9 +3,12 @@ package ru.bishel.main.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.bishel.main.dao.CarsDAO;
 import ru.bishel.main.models.Car;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/cars")
@@ -34,7 +37,12 @@ public class CarsController {
         return "cars/newCar";
     }
     @PostMapping()
-    public String addCar(@ModelAttribute("car") Car car) {
+    public String addCar(@ModelAttribute("car") @Valid Car car, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("POST BINDING HAS ERRORS");
+            return "cars/newCar";
+        }
+
         carsDAO.addCar(car);
         return "redirect:/cars";
     }
@@ -44,7 +52,12 @@ public class CarsController {
         return "cars/edit";
     }
     @PatchMapping("/{id}")
-    public String confirmChanges(@ModelAttribute("car") Car car, @PathVariable("id") int id) {
+    public String confirmChanges(@ModelAttribute("car") @Valid Car car, BindingResult bindingResult, @PathVariable("id") int id) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("PATCH BINDING HAS ERRORS");
+            return "cars/edit";
+        }
+
         carsDAO.editCar(car, id);
         return "redirect:/cars";
     }
