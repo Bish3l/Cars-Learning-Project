@@ -3,28 +3,71 @@ package ru.bishel.main.dao;
 import org.springframework.stereotype.Component;
 import ru.bishel.main.models.Car;
 
+import java.sql.*;
 import java.util.*;
 
 @Component
 public class CarsDAO {
     private static int ID = 0;
-    List<Car> cars;
 
-    {
-        cars = new ArrayList<>();
+    private static final String URL = "jdbc:postgresql://localhost:5432/first_db";
+    private static final String USERNAME = "postgres";
+    private static final String PASSWORD = "12344321";
 
-        cars.add(new Car(ID++,"Lamborghini Aventador", 400, 2, 200000, 2019));
-        cars.add(new Car(ID++,"BMW X5", 230, 4, 40000, 2014));
-        cars.add(new Car(ID++,"Toyota Corolla", 170, 4, 10000, 2007));
-        cars.add(new Car(ID++,"Mercedes AMG GT Roadster", 370, 2, 97500, 2020));
+    private static Connection connection;
+
+    static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch(ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
-
     public List<Car> getCars() {
+        List<Car> cars = new ArrayList<>();
+
+        try {
+            Statement statement = connection.createStatement();
+            String SQL = "SELECT * FROM car";
+            ResultSet resultSet = statement.executeQuery(SQL);
+
+            while(resultSet.next()) {
+                Car car = new Car();
+
+                car.setId(resultSet.getInt("id"));
+                car.setAmountOfDoors(resultSet.getInt("amountOfDoors"));
+                car.setCost(resultSet.getInt("cost"));
+                car.setManufacturingYear(resultSet.getInt("manufacturingYear"));
+                car.setName(resultSet.getString("name"));
+                car.setMaxSpeed(resultSet.getInt("maxSpeed"));
+
+                cars.add(car);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         return cars;
     }
     public void addCar(Car car) {
-        car.setId(ID++);
-        cars.add(car);
+//        car.setId(ID++);
+//        cars.add(car);
+
+        try {
+            Statement statement = connection.createStatement();
+            String SQL = "INSERT INTO car VALUES(" + 1 + ",'" + car.getName() + "'" + "," + car.getMaxSpeed() + "," + car.getAmountOfDoors() + ","
+                    + car.getManufacturingYear() + "," + car.getCost() + ")";
+            statement.executeUpdate(SQL);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
     public void editCar(Car car, int id) {
         Car existingCar = getCar(id);
@@ -36,19 +79,20 @@ public class CarsDAO {
         existingCar.setManufacturingYear(car.getManufacturingYear());
     }
     public void deleteCar(int id) {
-        for (int i = 0; i < cars.size(); i++) {
-            if (cars.get(i).getId() == id) {
-                cars.remove(i);
-                return;
-            }
-        }
+//        for (int i = 0; i < cars.size(); i++) {
+//            if (cars.get(i).getId() == id) {
+//                cars.remove(i);
+//                return;
+//            }
+//        }
     }
     public Car getCar(int id) {
-        for (int i = 0; i < cars.size(); i++) {
-            if (cars.get(i).getId() == id) {
-                return cars.get(i);
-            }
-        }
+//        for (int i = 0; i < cars.size(); i++) {
+//            if (cars.get(i).getId() == id) {
+//                return cars.get(i);
+//            }
+//        }
+//        return null;
         return null;
     }
 }
