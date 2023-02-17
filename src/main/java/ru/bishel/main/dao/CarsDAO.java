@@ -56,43 +56,71 @@ public class CarsDAO {
         return cars;
     }
     public void addCar(Car car) {
-//        car.setId(ID++);
-//        cars.add(car);
 
         try {
-            Statement statement = connection.createStatement();
-            String SQL = "INSERT INTO car VALUES(" + 1 + ",'" + car.getName() + "'" + "," + car.getMaxSpeed() + "," + car.getAmountOfDoors() + ","
-                    + car.getManufacturingYear() + "," + car.getCost() + ")";
-            statement.executeUpdate(SQL);
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO car VALUES(1, ?, ?, ?, ?, ?)");
+
+            preparedStatement.setString(1, car.getName());
+            preparedStatement.setInt(2, car.getMaxSpeed());
+            preparedStatement.setInt(3, car.getAmountOfDoors());
+            preparedStatement.setInt(4, car.getManufacturingYear());
+            preparedStatement.setInt(5, car.getCost());
+
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
     public void editCar(Car car, int id) {
-        Car existingCar = getCar(id);
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE car SET name=?, manufacturingYear=?," +
+                    " cost=?, maxSpeed=?, amountOfDoors=? WHERE id=?");
 
-        existingCar.setCost(car.getCost());
-        existingCar.setName(car.getName());
-        existingCar.setAmountOfDoors(car.getAmountOfDoors());
-        existingCar.setMaxSpeed(car.getMaxSpeed());
-        existingCar.setManufacturingYear(car.getManufacturingYear());
+            preparedStatement.setString(1, car.getName());
+            preparedStatement.setInt(2, car.getManufacturingYear());
+            preparedStatement.setInt(3, car.getCost());
+            preparedStatement.setInt(4, car.getMaxSpeed());
+            preparedStatement.setInt(5, car.getAmountOfDoors());
+            preparedStatement.setInt(6, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void deleteCar(int id) {
-//        for (int i = 0; i < cars.size(); i++) {
-//            if (cars.get(i).getId() == id) {
-//                cars.remove(i);
-//                return;
-//            }
-//        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM car WHERE id=?");
+            preparedStatement.setInt(1, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     public Car getCar(int id) {
-//        for (int i = 0; i < cars.size(); i++) {
-//            if (cars.get(i).getId() == id) {
-//                return cars.get(i);
-//            }
-//        }
-//        return null;
-        return null;
+        Car car = null;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM car WHERE id=?");
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            car = new Car();
+
+            car.setId(resultSet.getInt("id"));
+            car.setMaxSpeed(resultSet.getInt("maxSpeed"));
+            car.setName(resultSet.getString("name"));
+            car.setAmountOfDoors(resultSet.getInt("amountOfDoors"));
+            car.setManufacturingYear(resultSet.getInt("manufacturingYear"));
+            car.setCost(resultSet.getInt("cost"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return car;
     }
 }
