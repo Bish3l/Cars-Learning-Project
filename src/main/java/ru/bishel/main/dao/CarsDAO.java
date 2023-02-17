@@ -1,5 +1,7 @@
 package ru.bishel.main.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.bishel.main.models.Car;
 
@@ -10,117 +12,29 @@ import java.util.*;
 public class CarsDAO {
     private static int ID = 0;
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/first_db";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "12344321";
+    private final JdbcTemplate jdbcTemplate;
 
-    private static Connection connection;
-
-    static {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch(ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    @Autowired
+    public CarsDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
+
     public List<Car> getCars() {
-        List<Car> cars = new ArrayList<>();
 
-        try {
-            Statement statement = connection.createStatement();
-            String SQL = "SELECT * FROM car";
-            ResultSet resultSet = statement.executeQuery(SQL);
-
-            while(resultSet.next()) {
-                Car car = new Car();
-
-                car.setId(resultSet.getInt("id"));
-                car.setAmountOfDoors(resultSet.getInt("amountOfDoors"));
-                car.setCost(resultSet.getInt("cost"));
-                car.setManufacturingYear(resultSet.getInt("manufacturingYear"));
-                car.setName(resultSet.getString("name"));
-                car.setMaxSpeed(resultSet.getInt("maxSpeed"));
-
-                cars.add(car);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return cars;
+        return jdbcTemplate.query("SELECT * FROM car", new CarsMapper());
     }
     public void addCar(Car car) {
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO car VALUES(1, ?, ?, ?, ?, ?)");
-
-            preparedStatement.setString(1, car.getName());
-            preparedStatement.setInt(2, car.getMaxSpeed());
-            preparedStatement.setInt(3, car.getAmountOfDoors());
-            preparedStatement.setInt(4, car.getManufacturingYear());
-            preparedStatement.setInt(5, car.getCost());
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
+        jdbcTemplate.update("INSERT INTO car VALUES(1, ?, ?, ?, ?, ?)", car.getName(), car.getMaxSpeed(), car.getAmountOfDoors(), car.getManufacturingYear(), car.getCost());
     }
     public void editCar(Car car, int id) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE car SET name=?, manufacturingYear=?," +
-                    " cost=?, maxSpeed=?, amountOfDoors=? WHERE id=?");
-
-            preparedStatement.setString(1, car.getName());
-            preparedStatement.setInt(2, car.getManufacturingYear());
-            preparedStatement.setInt(3, car.getCost());
-            preparedStatement.setInt(4, car.getMaxSpeed());
-            preparedStatement.setInt(5, car.getAmountOfDoors());
-            preparedStatement.setInt(6, id);
-
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update("UPDATE car SET name=?, maxSpeed=?, amountOfDoors=?, manufacturingYear=?, cost=? WHERE id=?",
+                car.getName(), car.getMaxSpeed(), car.getAmountOfDoors(), car.getManufacturingYear(), car.getCost(), id);
     }
     public void deleteCar(int id) {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM car WHERE id=?");
-            preparedStatement.setInt(1, id);
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update("DELETE FROM car WHERE id=?", id);
     }
     public Car getCar(int id) {
-        Car car = null;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM car WHERE id=?");
-            preparedStatement.setInt(1, id);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-
-            car = new Car();
-
-            car.setId(resultSet.getInt("id"));
-            car.setMaxSpeed(resultSet.getInt("maxSpeed"));
-            car.setName(resultSet.getString("name"));
-            car.setAmountOfDoors(resultSet.getInt("amountOfDoors"));
-            car.setManufacturingYear(resultSet.getInt("manufacturingYear"));
-            car.setCost(resultSet.getInt("cost"));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return car;
+        return jdbcTemplate.query("SELECT * FROM car WHERE id=?", new Object[]{id}, new CarsMapper())
+                .stream().findAny().orElse(null);
     }
 }
