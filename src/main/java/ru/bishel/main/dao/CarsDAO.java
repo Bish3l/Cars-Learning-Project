@@ -24,7 +24,7 @@ public class CarsDAO {
         return jdbcTemplate.query("SELECT * FROM car", new CarsMapper());
     }
     public void addCar(Car car) {
-        jdbcTemplate.update("INSERT INTO car VALUES(1, ?, ?, ?, ?, ?)", car.getName(), car.getMaxSpeed(), car.getAmountOfDoors(), car.getManufacturingYear(), car.getCost());
+        jdbcTemplate.update("INSERT INTO car(name, maxSpeed, amountOfDoors, manufacturingYear, cost) VALUES(?, ?, ?, ?, ?)", car.getName(), car.getMaxSpeed(), car.getAmountOfDoors(), car.getManufacturingYear(), car.getCost());
     }
     public void editCar(Car car, int id) {
         jdbcTemplate.update("UPDATE car SET name=?, maxSpeed=?, amountOfDoors=?, manufacturingYear=?, cost=? WHERE id=?",
